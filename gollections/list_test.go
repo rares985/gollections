@@ -6,9 +6,14 @@ import (
 	"testing"
 )
 
+var (
+	one   = 1
+	three = 3
+)
+
 func TestIsListEmpty(t *testing.T) {
 	testCases := map[string]struct {
-		list *List
+		list *List[int]
 		want bool
 	}{
 		"empty list": {
@@ -16,11 +21,11 @@ func TestIsListEmpty(t *testing.T) {
 			want: true,
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: true,
 		},
 		"non empty": {
-			list: &List{head: &Node{2, nil}},
+			list: &List[int]{head: &ListNode[int]{2, nil}},
 			want: false,
 		},
 	}
@@ -38,7 +43,7 @@ func TestIsListEmpty(t *testing.T) {
 
 func TestListLength(t *testing.T) {
 	testCases := map[string]struct {
-		list *List
+		list *List[int]
 		want int
 	}{
 		"empty list": {
@@ -46,15 +51,15 @@ func TestListLength(t *testing.T) {
 			want: 0,
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: 0,
 		},
 		"non empty": {
-			list: &List{head: &Node{2, nil}},
+			list: &List[int]{head: &ListNode[int]{2, nil}},
 			want: 1,
 		},
 		"non empty longer": {
-			list: &List{head: &Node{2, &Node{3, nil}}},
+			list: &List[int]{head: &ListNode[int]{2, &ListNode[int]{3, nil}}},
 			want: 2,
 		},
 	}
@@ -72,24 +77,24 @@ func TestListLength(t *testing.T) {
 
 func TestListFront(t *testing.T) {
 	testCases := map[string]struct {
-		list *List
-		want *Node
+		list *List[int]
+		want *ListNode[int]
 	}{
 		"empty list": {
 			list: nil,
 			want: nil,
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: nil,
 		},
 		"non empty": {
-			list: &List{head: &Node{2, nil}},
-			want: &Node{2, nil},
+			list: &List[int]{head: &ListNode[int]{2, nil}},
+			want: &ListNode[int]{2, nil},
 		},
 		"non empty longer": {
-			list: &List{head: &Node{2, &Node{3, nil}}},
-			want: &Node{2, &Node{3, nil}},
+			list: &List[int]{head: &ListNode[int]{2, &ListNode[int]{3, nil}}},
+			want: &ListNode[int]{2, &ListNode[int]{3, nil}},
 		},
 	}
 
@@ -106,24 +111,24 @@ func TestListFront(t *testing.T) {
 
 func TestListBack(t *testing.T) {
 	testCases := map[string]struct {
-		list *List
-		want *Node
+		list *List[int]
+		want *ListNode[int]
 	}{
 		"empty list": {
 			list: nil,
 			want: nil,
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: nil,
 		},
 		"non empty": {
-			list: &List{head: &Node{2, nil}},
-			want: &Node{2, nil},
+			list: &List[int]{head: &ListNode[int]{2, nil}},
+			want: &ListNode[int]{2, nil},
 		},
 		"non empty longer": {
-			list: &List{head: &Node{2, &Node{3, nil}}},
-			want: &Node{3, nil},
+			list: &List[int]{head: &ListNode[int]{2, &ListNode[int]{3, nil}}},
+			want: &ListNode[int]{3, nil},
 		},
 	}
 
@@ -139,12 +144,12 @@ func TestListBack(t *testing.T) {
 }
 
 func TestListHasCycle(t *testing.T) {
-	head := &Node{1, &Node{2, &Node{3, nil}}}
+	head := &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}
 	head.Next.Next.Next = head
 
 	testCases := map[string]struct {
-		head *Node
-		list *List
+		head *ListNode[int]
+		list *List[int]
 		want bool
 	}{
 		"empty list": {
@@ -152,19 +157,19 @@ func TestListHasCycle(t *testing.T) {
 			want: false,
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: false,
 		},
 		"non empty non cycle": {
-			list: &List{head: &Node{2, nil}},
+			list: &List[int]{head: &ListNode[int]{2, nil}},
 			want: false,
 		},
 		"non empty longer no cycle": {
-			list: &List{head: &Node{2, &Node{3, nil}}},
+			list: &List[int]{head: &ListNode[int]{2, &ListNode[int]{3, nil}}},
 			want: false,
 		},
 		"non empty longer with cycle": {
-			list: &List{head: head},
+			list: &List[int]{head: head},
 			want: true,
 		},
 	}
@@ -182,9 +187,9 @@ func TestListHasCycle(t *testing.T) {
 
 func TestListPushFront(t *testing.T) {
 	testCases := map[string]struct {
-		toPush any
-		list   *List
-		want   *List
+		toPush int
+		list   *List[int]
+		want   *List[int]
 	}{
 		"empty list": {
 			toPush: 2,
@@ -193,13 +198,13 @@ func TestListPushFront(t *testing.T) {
 		},
 		"empty head": {
 			toPush: 3,
-			list:   &List{head: nil},
-			want:   &List{head: &Node{3, nil}},
+			list:   &List[int]{head: nil},
+			want:   &List[int]{head: &ListNode[int]{3, nil}},
 		},
 		"non empty longer": {
 			toPush: 4,
-			list:   &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			want:   &List{head: &Node{4, &Node{1, &Node{2, &Node{3, nil}}}}},
+			list:   &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			want:   &List[int]{head: &ListNode[int]{4, &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}}},
 		},
 	}
 
@@ -216,9 +221,9 @@ func TestListPushFront(t *testing.T) {
 
 func TestListPushBack(t *testing.T) {
 	testCases := map[string]struct {
-		toPush any
-		list   *List
-		want   *List
+		toPush int
+		list   *List[int]
+		want   *List[int]
 	}{
 		"empty list": {
 			toPush: 2,
@@ -227,13 +232,13 @@ func TestListPushBack(t *testing.T) {
 		},
 		"empty head": {
 			toPush: 3,
-			list:   &List{head: nil},
-			want:   &List{head: &Node{3, nil}},
+			list:   &List[int]{head: nil},
+			want:   &List[int]{head: &ListNode[int]{3, nil}},
 		},
 		"non empty longer": {
 			toPush: 4,
-			list:   &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			want:   &List{head: &Node{1, &Node{2, &Node{3, &Node{4, nil}}}}},
+			list:   &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			want:   &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, &ListNode[int]{4, nil}}}}},
 		},
 	}
 
@@ -250,9 +255,9 @@ func TestListPushBack(t *testing.T) {
 
 func TestListPopFront(t *testing.T) {
 	testCases := map[string]struct {
-		list      *List
-		wantElem  any
-		wantList  *List
+		list      *List[int]
+		wantElem  *int
+		wantList  *List[int]
 		wantError error
 	}{
 		"empty list": {
@@ -261,19 +266,19 @@ func TestListPopFront(t *testing.T) {
 			wantError: fmt.Errorf("can not pop empty list"),
 		},
 		"empty head": {
-			list:      &List{head: nil},
-			wantList:  &List{head: nil},
+			list:      &List[int]{head: nil},
+			wantList:  &List[int]{head: nil},
 			wantError: fmt.Errorf("can not pop empty list"),
 		},
 		"one element": {
-			list:     &List{head: &Node{1, nil}},
-			wantList: &List{head: nil},
-			wantElem: 1,
+			list:     &List[int]{head: &ListNode[int]{1, nil}},
+			wantList: &List[int]{head: nil},
+			wantElem: &one,
 		},
 		"more elements": {
-			list:     &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			wantList: &List{head: &Node{2, &Node{3, nil}}},
-			wantElem: 1,
+			list:     &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			wantList: &List[int]{head: &ListNode[int]{2, &ListNode[int]{3, nil}}},
+			wantElem: &one,
 		},
 	}
 
@@ -294,9 +299,9 @@ func TestListPopFront(t *testing.T) {
 
 func TestListPopBack(t *testing.T) {
 	testCases := map[string]struct {
-		list      *List
-		wantElem  any
-		wantList  *List
+		list      *List[int]
+		wantElem  *int
+		wantList  *List[int]
 		wantError error
 	}{
 		"empty list": {
@@ -305,19 +310,19 @@ func TestListPopBack(t *testing.T) {
 			wantError: fmt.Errorf("can not pop empty list"),
 		},
 		"empty head": {
-			list:      &List{head: nil},
-			wantList:  &List{head: nil},
+			list:      &List[int]{head: nil},
+			wantList:  &List[int]{head: nil},
 			wantError: fmt.Errorf("can not pop empty list"),
 		},
 		"one element": {
-			list:     &List{head: &Node{1, nil}},
-			wantList: &List{head: nil},
-			wantElem: 1,
+			list:     &List[int]{head: &ListNode[int]{1, nil}},
+			wantList: &List[int]{head: nil},
+			wantElem: &one,
 		},
 		"more elements": {
-			list:     &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			wantList: &List{head: &Node{1, &Node{2, nil}}},
-			wantElem: 3,
+			list:     &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			wantList: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, nil}}},
+			wantElem: &three,
 		},
 	}
 
@@ -338,24 +343,24 @@ func TestListPopBack(t *testing.T) {
 
 func TestListReverse(t *testing.T) {
 	testCases := map[string]struct {
-		list     *List
-		wantList *List
+		list     *List[int]
+		wantList *List[int]
 	}{
 		"empty list": {
 			list:     nil,
 			wantList: nil,
 		},
 		"empty head": {
-			list:     &List{head: nil},
-			wantList: &List{head: nil},
+			list:     &List[int]{head: nil},
+			wantList: &List[int]{head: nil},
 		},
 		"one element": {
-			list:     &List{head: &Node{1, nil}},
-			wantList: &List{head: &Node{1, nil}},
+			list:     &List[int]{head: &ListNode[int]{1, nil}},
+			wantList: &List[int]{head: &ListNode[int]{1, nil}},
 		},
 		"more elements": {
-			list:     &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			wantList: &List{head: &Node{3, &Node{2, &Node{1, nil}}}},
+			list:     &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			wantList: &List[int]{head: &ListNode[int]{3, &ListNode[int]{2, &ListNode[int]{1, nil}}}},
 		},
 	}
 
@@ -373,7 +378,7 @@ func TestListReverse(t *testing.T) {
 
 func TestString(t *testing.T) {
 	testCases := map[string]struct {
-		list *List
+		list *List[int]
 		want string
 	}{
 		"empty list": {
@@ -381,15 +386,15 @@ func TestString(t *testing.T) {
 			want: "nil",
 		},
 		"empty head": {
-			list: &List{head: nil},
+			list: &List[int]{head: nil},
 			want: "nil",
 		},
 		"one element": {
-			list: &List{head: &Node{1, nil}},
+			list: &List[int]{head: &ListNode[int]{1, nil}},
 			want: "1->nil",
 		},
 		"more elements": {
-			list: &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
+			list: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
 			want: "1->2->3->nil",
 		},
 	}
@@ -407,8 +412,8 @@ func TestString(t *testing.T) {
 
 func TestListEqual(t *testing.T) {
 	testCases := map[string]struct {
-		list1 *List
-		list2 *List
+		list1 *List[int]
+		list2 *List[int]
 		equal bool
 	}{
 		"nil vs nil": {
@@ -418,22 +423,22 @@ func TestListEqual(t *testing.T) {
 		},
 		"nil vs head nil": {
 			list1: nil,
-			list2: &List{head: nil},
+			list2: &List[int]{head: nil},
 			equal: false,
 		},
 		"head nil vs head nil": {
-			list1: &List{head: nil},
-			list2: &List{head: nil},
+			list1: &List[int]{head: nil},
+			list2: &List[int]{head: nil},
 			equal: true,
 		},
 		"non nil vs non nil equal": {
-			list1: &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			list2: &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
+			list1: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			list2: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
 			equal: true,
 		},
 		"non nil vs non nil non equal": {
-			list1: &List{head: &Node{1, &Node{2, &Node{3, nil}}}},
-			list2: &List{head: &Node{1, &Node{2, &Node{4, nil}}}},
+			list1: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{3, nil}}}},
+			list2: &List[int]{head: &ListNode[int]{1, &ListNode[int]{2, &ListNode[int]{4, nil}}}},
 			equal: false,
 		},
 	}

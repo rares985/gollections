@@ -1,18 +1,22 @@
 package gollections
 
-type BinaryTreeNode struct {
-	Val   any
-	Left  *BinaryTreeNode
-	Right *BinaryTreeNode
+type BinaryTree[T comparable] struct {
+	Val   T
+	Left  *BinaryTree[T]
+	Right *BinaryTree[T]
 }
 
-func (node *BinaryTreeNode) IsLeaf() bool {
-	return node.Left == nil && node.Right == nil
+func NewBinaryTree[T comparable]() *BinaryTree[T] {
+	return &BinaryTree[T]{}
 }
 
-func (node *BinaryTreeNode) Inorder() []any {
+func (node *BinaryTree[T]) IsLeaf() bool {
+	return node != nil && node.Left == nil && node.Right == nil
+}
+
+func (node *BinaryTree[T]) Inorder() []T {
 	if node == nil {
-		return []any{}
+		return []T{}
 	}
 
 	left := node.Left.Inorder()
@@ -20,19 +24,19 @@ func (node *BinaryTreeNode) Inorder() []any {
 	return append(append(left, node.Val), right...)
 }
 
-func (node *BinaryTreeNode) Preorder() []any {
+func (node *BinaryTree[T]) Preorder() []T {
 	if node == nil {
-		return []any{}
+		return []T{}
 	}
 
 	left := node.Left.Preorder()
 	right := node.Right.Preorder()
-	return append(append([]any{node.Val}, left...), right...)
+	return append(append([]T{node.Val}, left...), right...)
 }
 
-func (node *BinaryTreeNode) Postorder() []any {
+func (node *BinaryTree[T]) Postorder() []T {
 	if node == nil {
-		return []any{}
+		return []T{}
 	}
 
 	left := node.Left.Postorder()
@@ -40,27 +44,75 @@ func (node *BinaryTreeNode) Postorder() []any {
 	return append(append(left, right...), node.Val)
 }
 
-type BinaryTree struct {
-	Root *BinaryTreeNode
+func (node *BinaryTree[T]) Depth() int {
+	if node == nil {
+		return 0
+	}
+	ld := node.Left.Depth()
+	rd := node.Right.Depth()
+
+	return max(ld, rd) + 1
 }
 
-func (tree *BinaryTree) Inorder() []any {
-	if tree == nil {
-		return []any{}
+func (node *BinaryTree[T]) NbNodes() int {
+	if node == nil {
+		return 0
 	}
-	return tree.Root.Inorder()
+	lnb := node.Left.NbNodes()
+	rnb := node.Right.NbNodes()
+
+	return lnb + rnb + 1
 }
 
-func (tree *BinaryTree) Postorder() []any {
-	if tree == nil {
-		return []any{}
-	}
-	return tree.Root.Postorder()
+func (node *BinaryTree[T]) HasLeft() bool {
+	return node != nil && node.Left != nil
 }
 
-func (tree *BinaryTree) Preorder() []any {
-	if tree == nil {
-		return []any{}
+func (node *BinaryTree[T]) HasRight() bool {
+	return node != nil && node.Right != nil
+}
+
+func (node *BinaryTree[T]) InsertLeft(value T) {
+	if node == nil {
+		return
 	}
-	return tree.Root.Preorder()
+	newNode := &BinaryTree[T]{value, nil, nil}
+	node.Left = newNode
+}
+
+func (node *BinaryTree[T]) InsertRight(value T) {
+	if node == nil {
+		return
+	}
+	newNode := &BinaryTree[T]{value, nil, nil}
+	node.Right = newNode
+}
+
+func (node *BinaryTree[T]) Invert() {
+	if node == nil {
+		return
+	}
+
+	aux := node.Left
+	node.Left = node.Right
+	node.Right = aux
+
+	node.Left.Invert()
+	node.Right.Invert()
+}
+
+func (node *BinaryTree[T]) Equals(other *BinaryTree[T]) bool {
+	if node == nil && other == nil {
+		return true
+	}
+
+	if node != nil && other == nil || node == nil && other != nil {
+		return false
+	}
+
+	equalsHere := (node.Val == other.Val)
+	equalsLeft := node.Left.Equals(other.Left)
+	equalsRight := node.Right.Equals(other.Right)
+
+	return equalsHere && equalsLeft && equalsRight
 }

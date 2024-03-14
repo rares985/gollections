@@ -7,19 +7,19 @@ import (
 
 func TestEnqueue(t *testing.T) {
 	testCases := map[string]struct {
-		elem  any
-		queue Queue
-		want  Queue
+		elem  int
+		queue Queue[int]
+		want  Queue[int]
 	}{
 		"enqueue empty": {
 			elem:  2,
-			queue: Queue{elements: []interface{}{}},
-			want:  Queue{elements: []interface{}{2}},
+			queue: Queue[int]{elements: []int{}},
+			want:  Queue[int]{elements: []int{2}},
 		},
 		"enqueue ok": {
 			elem:  2,
-			queue: Queue{elements: []interface{}{1, 3}},
-			want:  Queue{elements: []interface{}{1, 3, 2}},
+			queue: Queue[int]{elements: []int{1, 3}},
+			want:  Queue[int]{elements: []int{1, 3, 2}},
 		},
 	}
 
@@ -37,19 +37,24 @@ func TestEnqueue(t *testing.T) {
 
 func TestDequeue(t *testing.T) {
 	testCases := map[string]struct {
-		elem  any
-		queue Queue
-		want  Queue
+		elem  *int
+		queue Queue[int]
+		want  Queue[int]
 	}{
 		"dequeue empty": {
-			elem:  2,
-			queue: Queue{elements: []interface{}{2}},
-			want:  Queue{elements: []interface{}{}},
+			elem:  nil,
+			queue: Queue[int]{},
+			want:  Queue[int]{},
+		},
+		"dequeue one element": {
+			elem:  &two,
+			queue: Queue[int]{elements: []int{2}},
+			want:  Queue[int]{elements: []int{}},
 		},
 		"dequeue ok": {
-			elem:  1,
-			queue: Queue{elements: []interface{}{1, 3, 2}},
-			want:  Queue{elements: []interface{}{3, 2}},
+			elem:  &one,
+			queue: Queue[int]{elements: []int{1, 3, 2}},
+			want:  Queue[int]{elements: []int{3, 2}},
 		},
 	}
 
@@ -71,17 +76,21 @@ func TestDequeue(t *testing.T) {
 
 func TestQueuePeek(t *testing.T) {
 	testCases := map[string]struct {
-		elem  any
-		queue Queue
-		want  Queue
+		elem  *int
+		queue Queue[int]
+		want  Queue[int]
 	}{
-		"dequeue empty": {
-			elem:  2,
-			queue: Queue{elements: []interface{}{2}},
+		"peek empty": {
+			queue: Queue[int]{},
+			want:  Queue[int]{},
 		},
-		"dequeue ok": {
-			elem:  1,
-			queue: Queue{elements: []interface{}{1, 3, 2}},
+		"peek one": {
+			elem:  &two,
+			queue: Queue[int]{elements: []int{2}},
+		},
+		"peek ok": {
+			elem:  &one,
+			queue: Queue[int]{elements: []int{1, 3, 2}},
 		},
 	}
 
@@ -103,14 +112,14 @@ func TestQueuePeek(t *testing.T) {
 func TestIsEmpty(t *testing.T) {
 	testCases := map[string]struct {
 		expected bool
-		queue    Queue
+		queue    Queue[int]
 	}{
 		"is empty": {
 			expected: true,
-			queue:    Queue{elements: []interface{}{}},
+			queue:    Queue[int]{elements: []int{}},
 		},
 		"is not empty": {
-			queue: Queue{elements: []interface{}{1, 3, 2}},
+			queue: Queue[int]{elements: []int{1, 3, 2}},
 		},
 	}
 
@@ -125,6 +134,31 @@ func TestIsEmpty(t *testing.T) {
 
 			if !reflect.DeepEqual(tc.expected, isEmpty) {
 				t.Fatalf("Got(%+v) != Want(%+v)", isEmpty, tc.expected)
+			}
+		})
+	}
+}
+func TestSize(t *testing.T) {
+	testCases := map[string]struct {
+		expected int
+		queue    Queue[int]
+	}{
+		"0": {
+			expected: 0,
+			queue:    Queue[int]{elements: []int{}},
+		},
+		"non 0": {
+			expected: 3,
+			queue:    Queue[int]{elements: []int{1, 3, 2}},
+		},
+	}
+
+	for description, tc := range testCases {
+		t.Run(description, func(t *testing.T) {
+			size := tc.queue.Size()
+
+			if !reflect.DeepEqual(tc.expected, size) {
+				t.Fatalf("Got(%+v) != Want(%+v)", size, tc.expected)
 			}
 		})
 	}

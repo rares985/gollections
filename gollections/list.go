@@ -2,20 +2,20 @@ package gollections
 
 import "fmt"
 
-type Node struct {
-	Val  any
-	Next *Node
+type ListNode[T comparable] struct {
+	Val  T
+	Next *ListNode[T]
 }
 
-type List struct {
-	head *Node
+type List[T comparable] struct {
+	head *ListNode[T]
 }
 
-func (this *List) IsEmpty() bool {
+func (this *List[T]) IsEmpty() bool {
 	return this == nil || this.head == nil
 }
 
-func (this *List) Length() int {
+func (this *List[T]) Length() int {
 	if this == nil {
 		return 0
 	}
@@ -27,14 +27,14 @@ func (this *List) Length() int {
 	return n
 }
 
-func (this *List) Front() *Node {
+func (this *List[T]) Front() *ListNode[T] {
 	if this == nil {
 		return nil
 	}
 	return this.head
 }
 
-func (this *List) Back() *Node {
+func (this *List[T]) Back() *ListNode[T] {
 	if this == nil {
 		return nil
 	}
@@ -48,7 +48,7 @@ func (this *List) Back() *Node {
 	return it
 }
 
-func (this *List) HasCycle() bool {
+func (this *List[T]) HasCycle() bool {
 	if this == nil {
 		return false
 	}
@@ -73,28 +73,28 @@ func (this *List) HasCycle() bool {
 	return false
 }
 
-func (this *List) PushFront(data any) {
+func (this *List[T]) PushFront(data T) {
 	if this == nil {
 		return
 	}
-	newNode := &Node{Val: data, Next: this.head}
-	this.head = newNode
+	newListNode := &ListNode[T]{Val: data, Next: this.head}
+	this.head = newListNode
 }
 
-func (this *List) PushBack(data any) {
+func (this *List[T]) PushBack(data T) {
 	if this == nil {
 		return
 	}
-	newNode := &Node{Val: data, Next: nil}
+	newListNode := &ListNode[T]{Val: data, Next: nil}
 	if this.head == nil {
-		this.head = newNode
+		this.head = newListNode
 	} else {
 		back := this.Back()
-		back.Next = newNode
+		back.Next = newListNode
 	}
 }
 
-func (this *List) PopFront() (any, error) {
+func (this *List[T]) PopFront() (*T, error) {
 	if this == nil || this.head == nil {
 		return nil, fmt.Errorf("can not pop empty list")
 	}
@@ -102,10 +102,10 @@ func (this *List) PopFront() (any, error) {
 	val := this.head.Val
 	this.head = this.head.Next
 
-	return val, nil
+	return &val, nil
 }
 
-func (this *List) PopBack() (any, error) {
+func (this *List[T]) PopBack() (*T, error) {
 	if this == nil || this.head == nil {
 		return nil, fmt.Errorf("can not pop empty list")
 	}
@@ -113,11 +113,11 @@ func (this *List) PopBack() (any, error) {
 	if this.head.Next == nil {
 		val := this.head.Val
 		this.head = nil
-		return val, nil
+		return &val, nil
 	}
 
 	it := this.head
-	var prev *Node
+	var prev *ListNode[T]
 
 	for it.Next != nil {
 		prev = it
@@ -126,24 +126,24 @@ func (this *List) PopBack() (any, error) {
 
 	val := it.Val
 	prev.Next = nil
-	return val, nil
+	return &val, nil
 }
 
-func (this *List) String() string {
+func (this *List[T]) String() string {
 	result := ""
 	if this == nil {
 		return "nil"
 	}
 
 	for it := this.head; it != nil; it = it.Next {
-		result += fmt.Sprintf("%d", it.Val)
+		result += fmt.Sprintf("%v", it.Val)
 		result += "->"
 	}
 	result += "nil"
 	return result
 }
 
-func (this *List) Equals(other *List) bool {
+func (this *List[T]) Equals(other *List[T]) bool {
 	if this == nil && other == nil {
 		return true
 	}
@@ -174,13 +174,13 @@ func (this *List) Equals(other *List) bool {
 	return true
 }
 
-func (this *List) Reverse() {
+func (this *List[T]) Reverse() {
 	if this == nil || this.head == nil {
 		return
 	}
 
 	it := this.head
-	var prev, next *Node
+	var prev, next *ListNode[T]
 
 	for it != nil {
 		next = it.Next
