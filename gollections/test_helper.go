@@ -2,10 +2,10 @@ package gollections
 
 import "testing"
 
-func compareErrors(t *testing.T, a, b error) bool {
+func compareErrors(t *testing.T, a, b error) {
 	t.Helper()
 	if a == nil && b == nil {
-		return true
+		return
 	}
 	if a == nil && b != nil {
 		t.Fatalf("Expected %v but got none", b.Error())
@@ -15,5 +15,7 @@ func compareErrors(t *testing.T, a, b error) bool {
 		t.Fatalf("Expected no error but got %v", a.Error())
 	}
 
-	return a.Error() == b.Error()
+	if a.Error() != b.Error() {
+		t.Fatalf("Expected an error like %v, but got %v", a.Error(), b.Error())
+	}
 }
