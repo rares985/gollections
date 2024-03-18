@@ -6,9 +6,8 @@ import (
 )
 
 type Graph struct {
-	directed  bool
-	Adj       [][]float64
-	VertexMap []int
+	directed bool
+	Adj      [][]float64
 }
 
 type GraphOption func(this *Graph)
@@ -111,6 +110,42 @@ func (g *Graph) FloydWarshall() [][]float64 {
 	}
 
 	return distance
+}
+
+func (g *Graph) ConnectedComponents() [][]int {
+	n := len(g.Adj)
+
+	if n == 0 {
+		return [][]int{}
+	}
+
+	components := [][]int{}
+	visited := make([]bool, n)
+
+	for i := 1; i < n; i++ {
+		if visited[i] {
+			continue
+		}
+		s := Stack[int]{[]int{i}}
+		component := []int{}
+
+		for !s.IsEmpty() {
+			v := s.Pop()
+			if !visited[*v] {
+				visited[*v] = true
+				component = append(component, *v)
+				for j := 0; j < n; j++ {
+					if *v != j && g.Adj[*v][j] != math.Inf(1) {
+						fmt.Printf("%v ", j)
+						s.Push(j)
+					}
+				}
+			}
+		}
+		components = append(components, component)
+	}
+
+	return components
 }
 
 func (g *Graph) String() string {

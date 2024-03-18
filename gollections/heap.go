@@ -4,7 +4,7 @@ import "fmt"
 
 type Heap[T comparable] struct {
 	elements []T
-	less     func(a, b T) bool
+	less     Less[T]
 }
 
 func (heap *Heap[T]) Insert(val T) {

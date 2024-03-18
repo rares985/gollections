@@ -3,6 +3,7 @@ package gollections
 import (
 	"math"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -120,6 +121,54 @@ func TestHasNode(t *testing.T) {
 
 			if got != tc.want {
 				t.Fatalf("Got(%+v) != Want(%+v)", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestUndirectedConnectedComponents(t *testing.T) {
+	testCases := map[string]struct {
+		g    *Graph
+		want [][]int
+	}{
+		"empty graph": {
+			g:    &Graph{},
+			want: [][]int{},
+		},
+		"complex": {
+			g: NewGraph(false, WithAdjacencyList(AdjacencyList{
+				1: {2: 1, 3: 1},
+				2: {1: 1, 3: 1, 4: 1},
+				3: {1: 1, 2: 1},
+				4: {2: 1, 5: 1, 6: 1},
+				5: {4: 1, 6: 1},
+				6: {4: 1, 5: 1},
+				7: {},
+				8: {9: 1},
+				9: {8: 1},
+			})),
+			want: [][]int{{1, 2, 3, 4, 5, 6}, {7}, {8, 9}},
+		},
+	}
+
+	for description, tc := range testCases {
+		t.Run(description, func(t *testing.T) {
+			got := tc.g.ConnectedComponents()
+			ccEqual := func(cc1, cc2 []int) bool {
+				sort.Slice(cc1, func(i, j int) bool { return cc1[i] < cc1[j] })
+				sort.Slice(cc2, func(i, j int) bool { return cc2[i] < cc2[j] })
+				return reflect.DeepEqual(cc1, cc2)
+			}
+
+			if len(tc.want) != len(got) {
+				t.Fatalf("Got(\n%+v) != Want(\n%+v)", got, tc.want)
+			}
+
+			for idx, ccWant := range tc.want {
+				ccGot := got[idx]
+				if !ccEqual(ccGot, ccWant) {
+					t.Fatalf("CC[%d]: Got(\n%+v) != Want(\n%+v)", idx, ccGot, ccWant)
+				}
 			}
 		})
 	}
